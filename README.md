@@ -1,6 +1,10 @@
 # UCAS-SEP科学前沿讲座信息导出助手
 
-> SEP能做的好用一点也不至于得写这个扩展！
+<p align="center">
+  <img src="store-icon.png" alt="UCAS-SEP 助手 Logo" width="128">
+</p>
+
+> 见鬼，SEP能做的好用一点也不至于得写这个扩展！
 
 本浏览器扩展可抓取国科大科学前沿讲座日程，提供一个带筛选功能的可视化管理面板，并能批量导出干净的 `.ics` 日历文件（包含单行描述、结构化场地信息、校区筛选等），方便一键导入到各类日历应用（如 Google Calendar, Outlook, Apple Calendar 等）。
 
