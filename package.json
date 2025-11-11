@@ -1,19 +1,22 @@
 {
-  "name": "workday-schedule-exporter",
-  "version": "1.0.6",
-  "description": "Adds the functionality to export a course schedule from Workday",
+  "name": "ucas-sep-schedule-exporter",
+  "version": "1.0.0",
+  "description": "UCAS-SEP 科学前沿讲座信息导出助手",
   "main": "index.js",
-  "author": "Gregory Conrad",
+  "author": "Jason Shelter",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GregoryConrad/WorkdayScheduleExporter.git"
+    "url": "https://github.com/jasonshelter0/ucas-sep-schedule-exporter.git"
   },
   "scripts": {
-    "build": "npm run build-content-script && npm run build-worker",
+    "build": "npm run build-content-script && npm run build-worker && npm run build-manager && npm run build-popup",
     "build-worker": "node_modules/.bin/browserify src/worker.ts -p [ tsify --noImplicitAny ] > out/worker.js",
     "build-content-script": "node_modules/.bin/browserify src/main.ts -p [ tsify --noImplicitAny ] > out/main.js",
-    "build-zip": "npm run build && node_modules/.bin/web-ext build"
+    "build-manager": "node_modules/.bin/browserify src/manager.ts -p [ tsify --noImplicitAny ] > out/manager.js",
+    "build-popup": "node_modules/.bin/browserify src/popup.ts -p [ tsify --noImplicitAny ] > out/popup.js",
+    "build-zip": "npm run build && node_modules/.bin/web-ext build",
+    "postinstall": "node scripts/apply-tsify-patch.js"
   },
   "dependencies": {
     "ics": "^3.4.0",

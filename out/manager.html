@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>UCAS-SEP科学前沿讲座信息导出助手</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 12px;
+            box-sizing: border-box;
+            /* width: 1600px; HACK: 移除 */
+            /* min-width: 1600px; HACK: 移除 */
+            overflow-x: hidden; /* HACK: 修改 */
+            background: #f8f9fa;
+            color: #212529;
+        }
+        h1 {
+            font-size: 16px;
+            margin: 0 0 8px;
+        }
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .filters {
+            display: grid;
+            /* HACK: 260px 对于 800px 窗口放3列太大了 (3*260+2*12 = 804px) */
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .filter-group {
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filter-group input {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 12px;
+            background: #fff;
+            color: inherit;
+            width: 100%;
+            /* HACK: 确保 input 也能 box-sizing */
+            box-sizing: border-box;
+        }
+        .multi-select {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px;
+            max-height: 140px;
+            overflow-y: auto;
+            background: #fff;
+            width: 100%;
+        }
+        .multi-select-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 2px 0;
+        }
+        .multi-select-option input {
+            flex: 0 0 auto;
+            /* HACK: 移除多余的 width: 100% 继承 */
+            width: auto; 
+        }
+        .multi-select-option span {
+            flex: 1;
+            min-width: 0;
+            /* HACK: 修复中文换行问题 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .multi-select-empty {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        button {
+            flex: 1;
+            border: 1px solid #0d6efd;
+            background: #0d6efd;
+            color: #fff;
+            border-radius: 4px;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        button[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .selection-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* HACK: center 垂直居中更美观 */
+            font-size: 12px;
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            background: #edf2ff;
+            border: 1px solid #cfe2ff;
+        }
+        .selection-panel.hidden {
+            display: none;
+        }
+        .selection-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .ghost-btn {
+            flex: initial;
+            border: 1px solid currentColor;
+            background: transparent;
+            color: inherit;
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+        #status {
+            font-size: 13px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            padding: 6px 8px;
+        }
+        .status-info { background: #e7f1ff; color: #084298; border: 1px solid #b6d4fe; }
+        .status-success { background: #e9f7ef; color: #0f5132; border: 1px solid #badbcc; }
+        .status-error { background: #fdecea; color: #842029; border: 1px solid #f5c2c7; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: #fff;
+            color: inherit;
+        }
+        thead th {
+            text-align: left;
+            border-bottom: 1px solid #ced4da;
+            padding: 4px 6px;
+            background: #f1f3f5;
+        }
+        tbody td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .empty-row {
+            text-align: center;
+            color: #6c757d;
+        }
+        table.hidden {
+            display: none;
+        }
+        a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1d2125;
+                color: #f5f6f8;
+            }
+            button {
+                border-color: #4c8dff;
+                background: #256eff;
+            }
+            table {
+                background: #23272f;
+            }
+            thead th {
+                background: #2f343d;
+                border-bottom-color: #3d424c;
+            }
+            tbody td {
+                border-bottom-color: #373c45;
+            }
+            .filter-group input {
+                background: #2b303a;
+                border-color: #495057;
+                color: #f5f6f8;
+            }
+            .multi-select {
+                background: #2b303a;
+                border-color: #495057;
+            }
+            .multi-select-option input {
+                accent-color: #6ea8fe;
+            }
+            .multi-select-empty {
+                color: #9aa0ac;
+            }
+            .selection-panel {
+                background: #25304a;
+                border-color: #394564;
+            }
+            .ghost-btn {
+                border-color: #8ab4ff;
+                color: #8ab4ff;
+            }
+            .status-info {
+                background: #1e2a44;
+                color: #b6d4fe;
+                border-color: #2e4370;
+            }
+            .status-success {
+                background: #1f3325;
+                color: #9dd6b4;
+                border-color: #2f4f39;
+            }
+            .status-error {
+                background: #3d1f23;
+                color: #f1aeb5;
+                border-color: #5a2c32;
+            }
+            .empty-row {
+                color: #9aa0ac;
+            }
+            a {
+                color: #8ab4ff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>UCAS-SEP科学前沿讲座信息导出助手</h1>
+    <div class="toolbar">
+        <button id="refresh-btn" data-action="refresh">刷新列表</button>
+        <button id="export-btn" data-action="export">导出 ICS</button>
+    </div>
+    <div class="filters">
+        <div class="filter-group">
+            <label>专题</label>
+            <div id="filter-topic-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>讲座名称</label>
+            <div id="filter-title-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>主讲人</label>
+            <div id="filter-speaker-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>部门</label>
+            <div id="filter-department-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>面向对象</label>
+            <div id="filter-audience-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>学时</label>
+            <div id="filter-credits-list" class="multi-select"></div>
+        </div>
+        <div class="filter-group">
+            <label>起始日期
+                <input id="filter-date-start" type="date">
+            </label>
+        </div>
+        <div class="filter-group">
+            <label>结束日期
+                <input id="filter-date-end" type="date">
+            </label>
+        </div>
+        <div class="filter-group">
+            <label>起始时间
+                <input id="filter-time-start" type="time">
+            </label>
+        </div>
+        <div class="filter-group">
+            <label>结束时间
+                <input id="filter-time-end" type="time">
+            </label>
+        </div>
+        <div class="filter-group">
+            <label>校区</label>
+            <div id="filter-venue-campus-list" class="multi-select"></div>
+        </div>
+    </div>
+    <div id="selection-panel" class="selection-panel hidden">
+        <span id="selection-summary">已选择 0 / 0 个讲座</span>
+        <div class="selection-buttons">
+            <button id="select-all-btn" data-action="select-all" class="ghost-btn" type="button">全选</button>
+            <button id="clear-selection-btn" data-action="clear-selection" class="ghost-btn" type="button">清空</button>
+        </div>
+    </div>
+    <div id="status" class="status status-info">等待与页面通信…</div>
+    <table id="lecture-table" class="hidden">
+        <thead>
+            <tr>
+                <th>选择</th>
+                <th>专题</th>
+                <th>名称</th>
+                <th>学时</th>
+                <th>时间</th>
+                <th>主会场</th>
+                <th>分会场</th>
+                <th>主讲人</th>
+                <th>部门</th>
+                <th>对象</th>
+                <th>内容</th>
+            </tr>
+        </thead>
+        <tbody id="lecture-rows"></tbody>
+    </table>
+    <script src="manager.js"></script>
+</body>
+</html>
