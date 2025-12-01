@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "UCAS-SEP科学前沿讲座信息导出助手",
     "description": "导出中国科学院大学科学前沿讲座信息的 ICS 文件。",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Gregory Conrad",
     "icons": {
         "16": "icons/icon16.png",
@@ -14,8 +14,8 @@
         "tabs"
     ],
     "host_permissions": [
-        "https://xkcts.ucas.ac.cn/*",
-        "https://xkcts.ucas.ac.cn:8443/*"
+        "https://jwxk.ucas.ac.cn/*",
+        "https://jwxk.ucas.ac.cn:8443/*"
     ],
     "action": {
         "default_title": "UCAS-SEP科学前沿讲座信息导出助手",
@@ -24,8 +24,8 @@
     "content_scripts": [
         {
             "matches": [
-                "https://xkcts.ucas.ac.cn/*",
-                "https://xkcts.ucas.ac.cn:8443/*"
+                "https://jwxk.ucas.ac.cn/*",
+                "https://jwxk.ucas.ac.cn:8443/*"
             ],
             "js": [
                 "main.js"

@@ -1,6 +1,6 @@
 {
   "name": "ucas-sep-schedule-exporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UCAS-SEP 科学前沿讲座信息导出助手",
   "main": "index.js",
   "author": "Jason Shelter",

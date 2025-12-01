@@ -5,13 +5,13 @@ import type { CollectLecturesMetadata, ContentRequest, ContentResponse } from ".
 
 type StatusKind = "info" | "success" | "error"
 
-const lectureHostPattern = /^https:\/\/xkcts\.ucas\.ac\.cn(?::\d+)?\//i
-const lecturePagePattern = /^https:\/\/xkcts\.ucas\.ac\.cn(?::\d+)?\/subject\/lecture/i
+const lectureHostPattern = /^https:\/\/jwxk\.ucas\.ac\.cn(?::\d+)?\//i
+const lecturePagePattern = /^https:\/\/jwxk\.ucas\.ac\.cn(?::\d+)?\/subject\/lecture/i
 const lectureHostQueryPatterns = [
-    "https://xkcts.ucas.ac.cn/subject/lecture*",
-    "https://xkcts.ucas.ac.cn/*",
-    "https://xkcts.ucas.ac.cn:8443/subject/lecture*",
-    "https://xkcts.ucas.ac.cn:8443/*",
+    "https://jwxk.ucas.ac.cn/subject/lecture*",
+    "https://jwxk.ucas.ac.cn/*",
+    "https://jwxk.ucas.ac.cn:8443/subject/lecture*",
+    "https://jwxk.ucas.ac.cn:8443/*",
 ]
 
 interface Filters {
@@ -515,7 +515,7 @@ function createMultiSelectOption(labelText: string, value: string, checked: bool
 async function getLectureTabId(): Promise<number> {
     const tab = await findLectureTab()
     if (!tab || !tab.id) {
-        throw new Error("请先在任意标签页打开 https://xkcts.ucas.ac.cn/subject/lecture。")
+        throw new Error("请先在任意标签页打开 https://jwxk.ucas.ac.cn/subject/lecture。")
     }
     return tab.id
 }
